@@ -58,6 +58,11 @@ class MainApplication(tk.Frame):
         self.canvas.create_rectangle(
             middle_x - rect_width, middle_y, middle_x + rect_width, middle_y + rect_height, fill="black")
 
+        self.canvas.create_rectangle(
+            middle_x - rect_width, middle_y, middle_x + rect_width, middle_y - rect_height, fill="black")
+
+        self._create_circle(middle_x, middle_y, 18, fill="blue")
+
         # create quit app button
         tk.Button(
             self.master, text='Quit', command=self.quit_app).grid(
