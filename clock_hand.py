@@ -52,15 +52,11 @@ class ClockHand():
                 if (self.angle + self.step_size) <= self.destination:
                     self.angle += self.step_size
                     self.iterations += 1
-                else:
-                    print("djfkasldfjakdlf;")
 
             elif self.angle > self.destination:         # moving counter-clockwise
                 if (self.angle + self.step_size) >= self.destination:
                     self.angle += self.step_size
                     self.iterations += 1
-                else:
-                    print("djfkasldfjakdlf;")
 
 
 def main():
