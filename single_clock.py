@@ -26,9 +26,11 @@ class SingleClock():
         self.hand_1.goto_angle()
         self.hand_2.goto_angle()
 
-        print("Hand 1 >>> ", self.hand_1.angle)
-        print("Hand 2 >>> ", self.hand_2.angle)
-        print("\n")
+        # print("Hand 1 >>> ", self.hand_1.angle)
+        # print("Hand 2 >>> ", self.hand_2.angle)
+        # print("\n")
+
+        return self.hand_1.angle, self.hand_2.angle
 
 
 def main():

@@ -9,6 +9,8 @@ except ImportError:
     import Tkinter as tk
 
 import math
+import time
+import single_clock as sc
 
 
 class MainApplication(tk.Frame):
@@ -22,6 +24,8 @@ class MainApplication(tk.Frame):
         self.master = master
         self.configure_gui()
         self.create_widgets()
+        self.initialize_clocks()
+
 
     def configure_gui(self):
         """ configure gui settings """
@@ -43,23 +47,23 @@ class MainApplication(tk.Frame):
     def create_widgets(self):
         """ initalizes widgets """
 
-        self.clock1 = ClockCanvas(self.master,200)
-        self.clock1.grid(row=0,column=0)
+        self.clock1_gui = ClockCanvas(self.master,200)
+        self.clock1_gui.grid(row=0,column=0)
 
-        self.clock2 = ClockCanvas(self.master,200)
-        self.clock2.grid(row=0,column=1)
+        self.clock2_gui = ClockCanvas(self.master,200)
+        self.clock2_gui.grid(row=0,column=1)
 
-        self.clock3 = ClockCanvas(self.master,200)
-        self.clock3.grid(row=1,column=0)
+        self.clock3_gui = ClockCanvas(self.master,200)
+        self.clock3_gui.grid(row=1,column=0)
 
-        self.clock4 = ClockCanvas(self.master,200)
-        self.clock4.grid(row=1,column=1)
+        self.clock4_gui = ClockCanvas(self.master,200)
+        self.clock4_gui.grid(row=1,column=1)
 
-        self.clock5 = ClockCanvas(self.master,200)
-        self.clock5.grid(row=2,column=0)
+        self.clock5_gui = ClockCanvas(self.master,200)
+        self.clock5_gui.grid(row=2,column=0)
 
-        self.clock6 = ClockCanvas(self.master,200)
-        self.clock6.grid(row=2,column=1)
+        self.clock6_gui = ClockCanvas(self.master,200)
+        self.clock6_gui.grid(row=2,column=1)
 
         # create quit app button
         tk.Button(
@@ -70,11 +74,69 @@ class MainApplication(tk.Frame):
         """ closes screen """
         self.master.destroy()
 
+    def initialize_clocks(self):
+        """ initializes all clocks """
+        self.clock1_cmd = sc.SingleClock(0, 90)
+        self.clock2_cmd = sc.SingleClock(0, 90)
+        self.clock3_cmd = sc.SingleClock(0, 90)
+        self.clock4_cmd = sc.SingleClock(0, 90)
+        self.clock5_cmd = sc.SingleClock(0, 90)
+        self.clock6_cmd = sc.SingleClock(0, 90)
+
+    def static_draw(self, config):
+        """ draws a static picture with clocks given the config array
+            config: [(a1, a2), (b1, b2), (c1, c2), (d1, d2), (e1, e2), (f1, f2)]
+        """
+        self.clock1_gui.draw_hands(config[0][0], config[0][1])
+        self.clock2_gui.draw_hands(config[1][0], config[1][1])
+        self.clock3_gui.draw_hands(config[2][0], config[2][1])
+        self.clock4_gui.draw_hands(config[3][0], config[3][1])
+        self.clock5_gui.draw_hands(config[4][0], config[4][1])
+        self.clock6_gui.draw_hands(config[5][0], config[5][1])
+
+
+    def evaluate_move(self, dest_config, motion_time):
+        """ set motion parameters given a destination config """
+        self.clock1_cmd.evaluate_move(dest_config[0][0], dest_config[0][1], motion_time)
+        self.clock2_cmd.evaluate_move(dest_config[1][0], dest_config[1][1], motion_time)
+        self.clock3_cmd.evaluate_move(dest_config[2][0], dest_config[2][1], motion_time)
+        self.clock4_cmd.evaluate_move(dest_config[3][0], dest_config[3][1], motion_time)
+        self.clock5_cmd.evaluate_move(dest_config[4][0], dest_config[4][1], motion_time)
+        self.clock6_cmd.evaluate_move(dest_config[5][0], dest_config[5][1], motion_time)
+
+
+    def draw(self):
+        """ dynamically draws a picture with clocks given the config array
+            config: [(a1, a2), (b1, b2), (c1, c2), (d1, d2), (e1, e2), (f1, f2)]
+        """
+        c1_a, c1_b = self.clock1_cmd.goto_pos()
+        c2_a, c2_b = self.clock2_cmd.goto_pos()
+        c3_a, c3_b = self.clock3_cmd.goto_pos()
+        c4_a, c4_b = self.clock4_cmd.goto_pos()
+        c5_a, c5_b = self.clock5_cmd.goto_pos()
+        c6_a, c6_b = self.clock6_cmd.goto_pos()
+
+        self.clock1_gui.draw_hands(c1_a, c1_b)
+        self.clock2_gui.draw_hands(c2_a, c2_b)
+        self.clock3_gui.draw_hands(c3_a, c3_b)
+        self.clock4_gui.draw_hands(c4_a, c4_b)
+        self.clock5_gui.draw_hands(c5_a, c5_b)
+        self.clock6_gui.draw_hands(c6_a, c6_b)
+
+
+    def reached_goal(self):
+        """ checks if all clocks have reached goal """
+        if self.clock1_cmd.hand_1.reached_goal and self.clock1_cmd.hand_2.reached_goal \
+        and self.clock1_cmd.hand_1.reached_goal and self.clock1_cmd.hand_1.reached_goal \
+        and self.clock1_cmd.hand_1.reached_goal and self.clock1_cmd.hand_1.reached_goal:
+            return True
+
+
 
 class ClockCanvas(tk.Frame):
     """ canvas for an individual clock """
     def __init__(self, master, canvas_width, hand1_angle=0, hand2_angle=0):
-        tk.Frame.__init__(self, master, bg='#626262')
+        tk.Frame.__init__(self, master)
 
         self.master = master
         self.canvas_width = canvas_width
@@ -130,7 +192,7 @@ class ClockCanvas(tk.Frame):
                 self.middle_x + h1_x_pos, self.middle_y - h1_y_pos, width=self.hand_width, fill="black")
 
         self.hand2 = self.canvas.create_line(self.middle_x, self.middle_y,
-                self.middle_x + h2_x_pos, self.middle_y - h2_y_pos, width=self.hand_width, fill="red")
+                self.middle_x + h2_x_pos, self.middle_y - h2_y_pos, width=self.hand_width, fill="black")
 
     def angle_to_coord(self, angle):
         """ determines x, y position for a given angle """
@@ -151,6 +213,9 @@ class ClockCanvas(tk.Frame):
         self.canvas.create_oval(x - r, y - r, x + r, y + r, **kwargs)
 
 
+def timer(t1):
+    """ stopwatch """
+    return time.time()-t1
 
 
 def main():
@@ -159,87 +224,69 @@ def main():
     root = tk.Tk()
     app = MainApplication(root)
 
-    # drawing 1
-    # app.clock1.draw_hands(-135, -135)
-    # app.clock2.draw_hands(0, -180)
-    # app.clock3.draw_hands(-135, -135)
-    # app.clock4.draw_hands(0, -180)
-    # app.clock5.draw_hands(-135, -135)
-    # app.clock6.draw_hands(0, -180)
+    home_pos = [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
+    number_1 = [(-135, -135), (0, -180), (-135, -135), (0, -180), (-135, -135), (0, 180)]
+    number_2 = [(90, 90), (-90, 180), (180, 90), (-90, 0), (0, 90), (-90, -90)]
+    number_3 = [(90, 90), (-90, 180), (90, 90), (-90, 0), (90, 90), (-90, 0)]
+    number_4 = [(180, 180), (180, 180), (0, 90), (0, 180), (-135, -135), (0, 180)]
+    number_5 = [(90, 180), (-90, -90), (0, 90), (-90, 180), (90, 90), (-90, 0)]
+    number_6 = [(90, 180), (-90, -90), (0, 180), (-90, 180), (0, 90), (-90, 0)]
+    number_7 = [(90, 90), (-90, -90), (-135, -135), (0, 180), (-135, -135), (0, 180)]
+    number_8 = [(90, 180), (-90, 180), (0, 90), (-90, 0), (0, 90), (-90, 0)]
+    number_9 = [(90, 180), (-90, 180), (0, 90), (-90, 0), (90, 90), (-90, 0)]
+    number_0 = [(90, 180), (-90, 180), (0, 180), (0, 180), (0, 90), (-90, 0)]
 
-    # drawing 2
-    # app.clock1.draw_hands(90, 90)
-    # app.clock2.draw_hands(-90, 180)
-    # app.clock3.draw_hands(180, 90)
-    # app.clock4.draw_hands(-90, 0)
-    # app.clock5.draw_hands(0, 90)
-    # app.clock6.draw_hands(-90, -90)
 
-    # drawing 3
-    # app.clock1.draw_hands(90, 90)
-    # app.clock2.draw_hands(-90, 180)
-    # app.clock3.draw_hands(90, 90)
-    # app.clock4.draw_hands(-90, 0)
-    # app.clock5.draw_hands(90, 90)
-    # app.clock6.draw_hands(-90, 0)
+    move_time = 1500
+    app.evaluate_move(home_pos, move_time)
+    time_1 = time.time()
+    quit_flag = False
+    while quit_flag is False:
+        app.draw()
+        app.update_idletasks()
+        app.update()
 
-    # drawing 4
-    # app.clock1.draw_hands(180, 180)
-    # app.clock2.draw_hands(180, 180)
-    # app.clock3.draw_hands(0, 90)
-    # app.clock4.draw_hands(0, 180)
-    # app.clock5.draw_hands(-135, -135)
-    # app.clock6.draw_hands(0, 180)
+        if app.reached_goal() is True and timer(time_1) > 2 and timer(time_1) < 2.01:
+            app.evaluate_move(number_1, move_time)
+            print("goal reached")
+        
+        if app.reached_goal() is True and timer(time_1) > 5 and timer(time_1) < 5.01:
+            app.evaluate_move(number_2, move_time)
+            print("goal reached")
 
-    # drawing 5
-    # app.clock1.draw_hands(90, 180)
-    # app.clock2.draw_hands(-90, -90)
-    # app.clock3.draw_hands(0, 90)
-    # app.clock4.draw_hands(-90, 180)
-    # app.clock5.draw_hands(90, 90)
-    # app.clock6.draw_hands(-90, 0)
+        if app.reached_goal() is True and timer(time_1) > 8 and timer(time_1) < 8.01:
+            app.evaluate_move(number_3, move_time)
+            print("goal reached")
+        if app.reached_goal() is True and timer(time_1) > 11 and timer(time_1) < 11.01:
+            app.evaluate_move(number_4, move_time)
+            print("goal reached")
+        if app.reached_goal() is True and timer(time_1) > 14 and timer(time_1) < 14.01:
+            app.evaluate_move(number_5, move_time)
+            print("goal reached")
+                                    
+        if app.reached_goal() is True and timer(time_1) > 17 and timer(time_1) < 17.01:
+            app.evaluate_move(number_6, move_time)
+            print("goal reached")
+        if app.reached_goal() is True and timer(time_1) > 20 and timer(time_1) < 20.01:
+            app.evaluate_move(number_7, move_time)
+            print("goal reached")
+                                    
+        if app.reached_goal() is True and timer(time_1) > 23 and timer(time_1) < 23.01:
+            app.evaluate_move(number_8, move_time)
+            print("goal reached")
+        if app.reached_goal() is True and timer(time_1) > 26 and timer(time_1) < 26.01:
+            app.evaluate_move(number_9, move_time)
+            print("goal reached")
+                        
+        if app.reached_goal() is True and timer(time_1) > 29 and timer(time_1) < 29.01:
+            app.evaluate_move(number_0, move_time)
+            print("goal reached")
 
-    # drawing 6
-    app.clock1.draw_hands(90, 180)
-    app.clock2.draw_hands(-90, -90)
-    app.clock3.draw_hands(0, 180)
-    app.clock4.draw_hands(-90, 180)
-    app.clock5.draw_hands(0, 90)
-    app.clock6.draw_hands(-90, 0)
+        if app.reached_goal() is True and timer(time_1) > 31 and timer(time_1) < 31.5:
+            print("goal reached")
+            quit_flag = True
 
-    # drawing 7
-    # app.clock1.draw_hands(90, 90)
-    # app.clock2.draw_hands(-90, -90)
-    # app.clock3.draw_hands(-135, -135)
-    # app.clock4.draw_hands(-90, 180)
-    # app.clock5.draw_hands(90, 90)
-    # app.clock6.draw_hands(-90, 0)
 
-    # drawing 8
-    # app.clock1.draw_hands(90, 180)
-    # app.clock2.draw_hands(-90, 180)
-    # app.clock3.draw_hands(0, 90)
-    # app.clock4.draw_hands(-90, 0)
-    # app.clock5.draw_hands(0, 90)
-    # app.clock6.draw_hands(-90, 0)
-
-    # drawing 9
-    # app.clock1.draw_hands(90, 180)
-    # app.clock2.draw_hands(-90, 180)
-    # app.clock3.draw_hands(0, 90)
-    # app.clock4.draw_hands(-90, 0)
-    # app.clock5.draw_hands(90, 90)
-    # app.clock6.draw_hands(-90, 0)
-
-    # drawing 0
-    # app.clock1.draw_hands(90, 180)
-    # app.clock2.draw_hands(-90, 180)
-    # app.clock3.draw_hands(0, 180)
-    # app.clock4.draw_hands(0, 180)
-    # app.clock5.draw_hands(0, 90)
-    # app.clock6.draw_hands(-90, 0)
-
-    app.mainloop()
 
 
 if __name__ == "__main__":
