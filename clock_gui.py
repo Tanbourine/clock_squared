@@ -93,14 +93,14 @@ class MainApplication(tk.Frame):
         self.clock5_gui.draw_hands(config[4][0], config[4][1])
         self.clock6_gui.draw_hands(config[5][0], config[5][1])
 
-    def evaluate_move(self, dest_config, motion_time):
+    def set_goal(self, dest_config, motion_time):
         """ set motion parameters given a destination config """
-        self.clock1_cmd.evaluate_move(dest_config[0][0], dest_config[0][1], motion_time)
-        self.clock2_cmd.evaluate_move(dest_config[1][0], dest_config[1][1], motion_time)
-        self.clock3_cmd.evaluate_move(dest_config[2][0], dest_config[2][1], motion_time)
-        self.clock4_cmd.evaluate_move(dest_config[3][0], dest_config[3][1], motion_time)
-        self.clock5_cmd.evaluate_move(dest_config[4][0], dest_config[4][1], motion_time)
-        self.clock6_cmd.evaluate_move(dest_config[5][0], dest_config[5][1], motion_time)
+        self.clock1_cmd.set_goal(dest_config[0][0], dest_config[0][1], motion_time)
+        self.clock2_cmd.set_goal(dest_config[1][0], dest_config[1][1], motion_time)
+        self.clock3_cmd.set_goal(dest_config[2][0], dest_config[2][1], motion_time)
+        self.clock4_cmd.set_goal(dest_config[3][0], dest_config[3][1], motion_time)
+        self.clock5_cmd.set_goal(dest_config[4][0], dest_config[4][1], motion_time)
+        self.clock6_cmd.set_goal(dest_config[5][0], dest_config[5][1], motion_time)
 
     def draw(self):
         """ dynamically draws a picture with clocks given the config array
@@ -120,11 +120,14 @@ class MainApplication(tk.Frame):
         self.clock5_gui.draw_hands(c5_a, c5_b)
         self.clock6_gui.draw_hands(c6_a, c6_b)
 
-    def reached_goal(self):
+    def motion_complete(self):
         """ checks if all clocks have reached goal """
-        return bool(self.clock1_cmd.hand_1.reached_goal and self.clock1_cmd.hand_2.reached_goal
-                    and self.clock1_cmd.hand_1.reached_goal and self.clock1_cmd.hand_1.reached_goal
-                    and self.clock1_cmd.hand_1.reached_goal and self.clock1_cmd.hand_1.reached_goal)
+        return bool(self.clock1_cmd.hand_1.motion_complete and
+                    self.clock1_cmd.hand_2.motion_complete
+                    and self.clock1_cmd.hand_1.motion_complete and
+                    self.clock1_cmd.hand_1.motion_complete
+                    and self.clock1_cmd.hand_1.motion_complete and
+                    self.clock1_cmd.hand_1.motion_complete)
 
 
 class ClockCanvas(tk.Frame):
@@ -138,7 +141,7 @@ class ClockCanvas(tk.Frame):
         self.canvas_width = canvas_width
         self.canvas_height = canvas_width
         self.clock_radius = 0.45 * self.canvas_width
-        self.hand_radius = 0.8 * self.clock_radius
+        self.hand_radius = 0.95 * self.clock_radius
         self.hand_width = 8
 
         self.middle_x = self.canvas_width / 2
@@ -159,7 +162,7 @@ class ClockCanvas(tk.Frame):
     def initialize_clockface(self, hand1_angle, hand2_angle):
         """ draws clock with initial hand positions """
         self._create_circle(self.middle_x, self.middle_y, self.clock_radius, fill="white")
-        self._create_circle(self.middle_x, self.middle_y, 18, fill="blue")
+        self._create_circle(self.middle_x, self.middle_y, 15, fill="blue")
 
         h1_x_pos, h1_y_pos = self.angle_to_coord(hand1_angle)
         h2_x_pos, h2_y_pos = self.angle_to_coord(hand2_angle)
@@ -217,7 +220,7 @@ def main():
     app = MainApplication(root)
 
     home_pos = [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
-    number_1 = [(-135, -135), (0, -180), (-135, -135), (0, -180), (-135, -135), (0, 0)]
+    number_1 = [(-135, -135), (-180, -180), (-135, -135), (0, -180), (-135, -135), (0, 0)]
     number_2 = [(90, 90), (-90, 180), (180, 90), (-90, 0), (0, 90), (-90, -90)]
     number_3 = [(90, 90), (-90, 180), (90, 90), (-90, 0), (90, 90), (-90, 0)]
     number_4 = [(180, 180), (180, 180), (0, 90), (0, 180), (-135, -135), (0, 1)]
@@ -229,7 +232,7 @@ def main():
     number_0 = [(90, 180), (-90, 180), (0, 180), (0, 180), (0, 90), (-90, 0)]
 
     move_time = 1500
-    app.evaluate_move(home_pos, move_time)
+    app.set_goal(home_pos, move_time)
     time_1 = time.time()
     quit_flag = False
     while quit_flag is False:
@@ -237,45 +240,48 @@ def main():
         app.update_idletasks()
         app.update()
 
-        if app.reached_goal() is True and timer(time_1) > 2 and timer(time_1) < 2.01:
-            app.evaluate_move(number_1, move_time)
-            print("goal reached")
+        if app.motion_complete() is True and timer(time_1) > 2 and timer(time_1) < 2.01:
+            app.set_goal(number_1, move_time)
+            print("goal reacheed")
 
-        if app.reached_goal() is True and timer(time_1) > 5 and timer(time_1) < 5.01:
-            app.evaluate_move(number_2, move_time)
-            print("goal reached")
+        if app.motion_complete() is True and timer(time_1) > 5 and timer(time_1) < 5.01:
+            app.set_goal(number_2, move_time)
+            print("goal reacheed")
 
-        if app.reached_goal() is True and timer(time_1) > 8 and timer(time_1) < 8.01:
-            app.evaluate_move(number_3, move_time)
+        if app.motion_complete() is True and timer(time_1) > 8 and timer(time_1) < 8.01:
+            app.set_goal(number_3, move_time)
             print("goal reached")
-        if app.reached_goal() is True and timer(time_1) > 11 and timer(time_1) < 11.01:
-            app.evaluate_move(number_4, move_time)
+        if app.motion_complete() is True and timer(time_1) > 11 and timer(time_1) < 11.01:
+            app.set_goal(number_4, move_time)
             print("goal reached")
-        if app.reached_goal() is True and timer(time_1) > 14 and timer(time_1) < 14.01:
-            app.evaluate_move(number_5, move_time)
-            print("goal reached")
+        if app.motion_complete() is True and timer(time_1) > 14 and timer(time_1) < 14.01:
+            app.set_goal(number_5, move_time)
+            print("goal reacheed")
 
-        if app.reached_goal() is True and timer(time_1) > 17 and timer(time_1) < 17.01:
-            app.evaluate_move(number_6, move_time)
+        if app.motion_complete() is True and timer(time_1) > 17 and timer(time_1) < 17.01:
+            app.set_goal(number_6, move_time)
             print("goal reached")
-        if app.reached_goal() is True and timer(time_1) > 20 and timer(time_1) < 20.01:
-            app.evaluate_move(number_7, move_time)
-            print("goal reached")
+        if app.motion_complete() is True and timer(time_1) > 20 and timer(time_1) < 20.01:
+            app.set_goal(number_7, move_time)
+            print("goal reacheed")
 
-        if app.reached_goal() is True and timer(time_1) > 23 and timer(time_1) < 23.01:
-            app.evaluate_move(number_8, move_time)
+        if app.motion_complete() is True and timer(time_1) > 23 and timer(time_1) < 23.01:
+            app.set_goal(number_8, move_time)
             print("goal reached")
-        if app.reached_goal() is True and timer(time_1) > 26 and timer(time_1) < 26.01:
-            app.evaluate_move(number_9, move_time)
-            print("goal reached")
+        if app.motion_complete() is True and timer(time_1) > 26 and timer(time_1) < 26.01:
+            app.set_goal(number_9, move_time)
+            print("goal reacheed")
 
-        if app.reached_goal() is True and timer(time_1) > 29 and timer(time_1) < 29.01:
-            app.evaluate_move(number_0, move_time)
-            print("goal reached")
+        if app.motion_complete() is True and timer(time_1) > 29 and timer(time_1) < 29.01:
+            app.set_goal(number_0, move_time)
+            print("goal reacheed")
 
-        if app.reached_goal() is True and timer(time_1) > 31 and timer(time_1) < 31.5:
+        if app.motion_complete() is True and timer(time_1) > 31 and timer(time_1) < 31.5:
             print("goal reached")
             quit_flag = True
+
+    time.sleep(2)
+    app.quit_app()
 
 
 if __name__ == "__main__":

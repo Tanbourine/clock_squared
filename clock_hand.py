@@ -17,16 +17,16 @@ class ClockHand():
         self.scan_rate = 100
         self.iterations = 0
         self.angle_tolerance = .1  # degrees
-        self.reached_goal = False
+        self.motion_complete = False
 
-    def evaluate_move(self, destination, motion_time):
+    def set_goal(self, destination, motion_time):
         """ sets the parameters for the upcoming move
         """
 
         assert (motion_time % self.scan_rate) < 1, "Scan Rate must divide evenly into motion_time"
 
         # reset goal flag
-        self.reached_goal = False
+        self.motion_complete = False
 
         # change in angle between starting and ending position
         self.destination = destination
@@ -35,18 +35,18 @@ class ClockHand():
         # determine step size
         self.step_size = self.delta_angle / motion_time * self.scan_rate
 
-    def goto_angle(self):
-        """ moves to preset parameters from evaluate_move()
+    def goto_pos(self):
+        """ moves to preset parameters from set_goal()
         """
 
         self.delta_angle = self.destination - self.angle
 
-        if (time.time() - self.pause_time) * 1000 >= self.scan_rate and self.reached_goal is False:
+        if (time.time() - self.pause_time) * 1000 >= self.scan_rate and self.motion_complete is False:
             self.pause_time = time.time()
 
             if abs(self.delta_angle) < self.angle_tolerance:
                 self.angle = self.destination
-                self.reached_goal = True
+                self.motion_complete = True
 
             elif self.angle < self.destination:           # moving clockwise
                 if (self.angle + self.step_size) <= self.destination:
@@ -68,16 +68,16 @@ def main():
     destination_2 = 0
     move_time = 1000
 
-    hand1.evaluate_move(destination_1, move_time)
-    hand2.evaluate_move(destination_2, move_time)
+    hand1.set_goal(destination_1, move_time)
+    hand2.set_goal(destination_2, move_time)
 
-    while hand1.reached_goal is False or hand2.reached_goal is False:
-        if hand1.reached_goal is False:
-            hand1.goto_angle()
+    while hand1.motion_complete is False or hand2.motion_complete is False:
+        if hand1.motion_complete is False:
+            hand1.goto_pos()
             print("Hand 1 >>> ", hand1.angle)
 
-        if hand2.reached_goal is False:
-            hand2.goto_angle()
+        if hand2.motion_complete is False:
+            hand2.goto_pos()
             print("Hand 2 >>> ", hand2.angle)
         time.sleep(.05)
 

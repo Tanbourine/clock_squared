@@ -12,19 +12,27 @@ class SingleClock():
         self.hand_1 = ch.ClockHand(hand_1_angle)
         self.hand_2 = ch.ClockHand(hand_2_angle)
 
-    def evaluate_move(self, dest_1, dest_2, motion_time):
+        # completion flag for a single clock
+        self.hand_1_complete = False
+        self.hand_2_complete = False
+
+        # moving flag
+        self.hand_1_moving = False
+        self.hand_2_moving = False
+
+    def set_goal(self, dest_1, dest_2, motion_time):
         """ evaluates motion parameters """
 
         # set motion parameters
-        self.hand_1.evaluate_move(dest_1, motion_time)
-        self.hand_2.evaluate_move(dest_2, motion_time)
+        self.hand_1.set_goal(dest_1, motion_time)
+        self.hand_2.set_goal(dest_2, motion_time)
 
     def goto_pos(self):
         """ goes to set angle positions for each hand """
 
         # start move
-        self.hand_1.goto_angle()
-        self.hand_2.goto_angle()
+        self.hand_1.goto_pos()
+        self.hand_2.goto_pos()
 
         # print("Hand 1 >>> ", self.hand_1.angle)
         # print("Hand 2 >>> ", self.hand_2.angle)
@@ -45,7 +53,7 @@ def main():
     clock.hand_1.scan_rate = scan_rate
     clock.hand_2.scan_rate = scan_rate
 
-    clock.evaluate_move(dest1, dest2, motion_time)
+    clock.set_goal(dest1, dest2, motion_time)
 
     timer1 = time.time()
 
