@@ -23,32 +23,37 @@ class DigitGUI(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
 
+        self.master = master
         self.dest_config = cc.HOME_POS
         self.digit_complete = False
-        self.master = master
+        self.clock_size = 150
+
         self.create_widgets()
         self.initialize_clocks()
 
     def create_widgets(self):
         """ initalizes widgets """
 
-        self.clock1_gui = ClockCanvas(self, 150)
+        self.clock1_gui = ClockCanvas(self, self.clock_size)
         self.clock1_gui.grid(row=0, column=0)
 
-        self.clock2_gui = ClockCanvas(self, 150)
+        self.clock2_gui = ClockCanvas(self, self.clock_size)
         self.clock2_gui.grid(row=0, column=1)
 
-        self.clock3_gui = ClockCanvas(self, 150)
+        self.clock3_gui = ClockCanvas(self, self.clock_size)
         self.clock3_gui.grid(row=1, column=0)
 
-        self.clock4_gui = ClockCanvas(self, 150)
+        self.clock4_gui = ClockCanvas(self, self.clock_size)
         self.clock4_gui.grid(row=1, column=1)
 
-        self.clock5_gui = ClockCanvas(self, 150)
+        self.clock5_gui = ClockCanvas(self, self.clock_size)
         self.clock5_gui.grid(row=2, column=0)
 
-        self.clock6_gui = ClockCanvas(self, 150)
+        self.clock6_gui = ClockCanvas(self, self.clock_size)
         self.clock6_gui.grid(row=2, column=1)
+
+        self.clock_gui_array = [self.clock1_gui, self.clock2_gui, self.clock3_gui, self.clock4_gui,
+                self.clock5_gui, self.clock6_gui]  
 
         # create quit app button
         # tk.Button(
@@ -61,6 +66,7 @@ class DigitGUI(tk.Frame):
 
     def initialize_clocks(self):
         """ initializes all clocks """
+
         self.clock1_cmd = sc.SingleClock(-90, 90)
         self.clock2_cmd = sc.SingleClock(-90, 90)
         self.clock3_cmd = sc.SingleClock(-90, 90)
@@ -68,17 +74,17 @@ class DigitGUI(tk.Frame):
         self.clock5_cmd = sc.SingleClock(-90, 90)
         self.clock6_cmd = sc.SingleClock(-90, 90)
 
+        self.clock_cmd_array = [self.clock1_cmd, self.clock2_cmd, self.clock3_cmd, self.clock4_cmd,
+                self.clock5_cmd, self.clock6_cmd]  
+
     def set_goal(self, dest_config, motion_time):
         """ set motion parameters given a destination config """
         self.dest_config = dest_config
         self.digit_complete = False
 
-        self.clock1_cmd.set_goal(dest_config[0][0], dest_config[0][1], motion_time)
-        self.clock2_cmd.set_goal(dest_config[1][0], dest_config[1][1], motion_time)
-        self.clock3_cmd.set_goal(dest_config[2][0], dest_config[2][1], motion_time)
-        self.clock4_cmd.set_goal(dest_config[3][0], dest_config[3][1], motion_time)
-        self.clock5_cmd.set_goal(dest_config[4][0], dest_config[4][1], motion_time)
-        self.clock6_cmd.set_goal(dest_config[5][0], dest_config[5][1], motion_time)
+        for i, clock in enumerate(self.clock_cmd_array):
+            clock.set_goal(dest_config[i][0], dest_config[i][1], motion_time)
+
 
     def draw(self):
         """ dynamically draws a picture with clocks given the config array
@@ -115,14 +121,14 @@ class ClockCanvas(tk.Frame):
         self.master = master
         self.canvas_width = canvas_width
         self.canvas_height = canvas_width
-        self.clock_radius = 0.45 * self.canvas_width
+        self.clock_radius = 0.485 * self.canvas_width
         self.hand_radius = 0.95 * self.clock_radius
         self.hand_width = 8
         self.dot_radius = 8
 
         self.face_color = "black"
         self.hand_color = "white"
-        self.dot_color = "red"
+        self.dot_color = "green"
         self.bg_color = "grey"
 
         self.middle_x = self.canvas_width / 2
@@ -156,7 +162,7 @@ class ClockCanvas(tk.Frame):
             self.middle_y - h1_y_pos, width=self.hand_width)
 
         self.hand2 = self.canvas.create_line(
-            self.middle_x, self.middle_y, self.middle_x + h2_x_pos,
+        self.middle_x, self.middle_y, self.middle_x + h2_x_pos,
             self.middle_y - h2_y_pos, width=self.hand_width)
 
     def draw_hands(self, hand1_angle, hand2_angle):
@@ -171,14 +177,29 @@ class ClockCanvas(tk.Frame):
         h2_x_pos, h2_y_pos = self.angle_to_coord(hand2_angle)
 
         # create hand 1
-        self.hand1 = self.canvas.create_line(self.middle_x, self.middle_y,
-                                             self.middle_x + h1_x_pos, self.middle_y - h1_y_pos,
-                                             width=self.hand_width, fill=self.hand_color)
+        if hand1_angle == -135:
+            self.hand1 = self.canvas.create_line(self.middle_x, self.middle_y,
+                                                 self.middle_x + h1_x_pos, self.middle_y - h1_y_pos,
+                                                 width=self.hand_width, fill="#262626")
+
+        else:
+            self.hand1 = self.canvas.create_line(self.middle_x, self.middle_y,
+                                                 self.middle_x + h1_x_pos, self.middle_y - h1_y_pos,
+                                                 width=self.hand_width, fill=self.hand_color)
 
         # create hand 2
-        self.hand2 = self.canvas.create_line(self.middle_x, self.middle_y,
-                                             self.middle_x + h2_x_pos, self.middle_y - h2_y_pos,
-                                             width=self.hand_width, fill=self.hand_color)
+        if hand2_angle == -135:
+            self.hand1 = self.canvas.create_line(self.middle_x, self.middle_y,
+                                                 self.middle_x + h1_x_pos, self.middle_y - h1_y_pos,
+                                                 width=self.hand_width, fill="#262626")
+        else:
+            self.hand2 = self.canvas.create_line(self.middle_x, self.middle_y,
+                                                 self.middle_x + h2_x_pos, self.middle_y - h2_y_pos,
+                                                 width=self.hand_width, fill=self.hand_color)
+
+    def reset_face(self, hand1_angle, hand2_angle):
+        self.initialize_canvas()
+        self.initialize_clockface(hand1_angle, hand2_angle)
 
     def angle_to_coord(self, angle):
         """ determines x, y position for a given angle """

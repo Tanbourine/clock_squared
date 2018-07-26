@@ -49,6 +49,15 @@ class MainApplication(tk.Frame):
         self.digit_4 = dg.DigitGUI(self.master)
         self.digit_4.grid(row=0, column=3)
 
+        digit_array = [self.digit_1, self.digit_2, self.digit_3, self.digit_4]
+
+        for digit in digit_array:
+            for i in range(6):
+                digit.clock_gui_array[i].dot_color = "#660000"
+                digit.clock_gui_array[i].bg_color = "black"
+                digit.clock_gui_array[i].hand_color = "white"
+                digit.clock_gui_array[i].reset_face(-90,90)
+
         # create quit app button
         tk.Button(
             self.master, text='Quit', command=self.quit_app).grid(
@@ -57,6 +66,7 @@ class MainApplication(tk.Frame):
     def quit_app(self):
         """ closes screen """
         self.master.destroy()
+       
 
 
 def t_bound(t1, t2, bound=0.1):
