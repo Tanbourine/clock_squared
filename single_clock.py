@@ -12,23 +12,33 @@ class SingleClock():
         self.hand_1 = ch.ClockHand(hand_1_angle)
         self.hand_2 = ch.ClockHand(hand_2_angle)
 
+        self.dest_1 = 0
+        self.dest_2 = 0
+
         # completion flag for a single clock
-        self.hand_1_complete = False
-        self.hand_2_complete = False
+        self.motion_complete = False
 
         # moving flag
-        self.hand_1_moving = False
-        self.hand_2_moving = False
+        self.moving = False
 
     def set_goal(self, dest_1, dest_2, motion_time):
         """ evaluates motion parameters """
+
+        # save destination
+        self.dest_1 = dest_1
+        self.dest_2 = dest_2
 
         # set motion parameters
         self.hand_1.set_goal(dest_1, motion_time)
         self.hand_2.set_goal(dest_2, motion_time)
 
+        self.motion_complete = False
+
     def goto_pos(self):
         """ goes to set angle positions for each hand """
+
+        if self.hand_1.angle == self.dest_1 and self.hand_2.angle == self.dest_2:
+            self.motion_complete = True
 
         # start move
         self.hand_1.goto_pos()
@@ -57,7 +67,7 @@ def main():
 
     timer1 = time.time()
 
-    while clock.hand_1.reached_goal is False or clock.hand_2.reached_goal is False:
+    while clock.hand_1.motion_complete is False or clock.hand_2.motion_complete is False:
         clock.goto_pos()
         time.sleep(scan_rate / 1000)
 
