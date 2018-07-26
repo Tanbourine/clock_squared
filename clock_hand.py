@@ -13,7 +13,7 @@ class ClockHand():
         self.destination = init_pos
         self.delta_angle = 0
         self.step_size = 0
-        self.pause_time = 0
+        self.prev_time = 0
         self.scan_rate = 100
         self.iterations = 0
         self.angle_tolerance = .1  # degrees
@@ -41,8 +41,8 @@ class ClockHand():
 
         self.delta_angle = self.destination - self.angle
 
-        if (time.time() - self.pause_time) * 1000 >= self.scan_rate and self.motion_complete is False:
-            self.pause_time = time.time()
+        if (time.time() - self.prev_time) * 1000 >= self.scan_rate and self.motion_complete is False:
+            self.prev_time = time.time()
 
             if abs(self.delta_angle) < self.angle_tolerance:
                 self.angle = self.destination
