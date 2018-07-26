@@ -11,53 +11,49 @@ except ImportError:
 import math
 import time
 import single_clock as sc
+import clock_config as cc
 
 
 # pylint: disable = too-many-ancestors, too-many-instance-attributes, invalid-name
 
-class MainApplication(tk.Frame):
+class DigitGUI(tk.Frame):
 
     """ master app """
 
     def __init__(self, master):
         tk.Frame.__init__(self, master)
 
+        self.dest_config = cc.HOME_POS
+        self.digit_complete = False
         self.master = master
-        self.configure_gui()
         self.create_widgets()
         self.initialize_clocks()
-
-    def configure_gui(self):
-        """ configure gui settings """
-        self.master.title("Clocks on Clocks")
-        # self.master.geometry("280x800")
-        self.master.resizable(width=True, height=True)
 
     def create_widgets(self):
         """ initalizes widgets """
 
-        self.clock1_gui = ClockCanvas(self.master, 200)
+        self.clock1_gui = ClockCanvas(self, 150)
         self.clock1_gui.grid(row=0, column=0)
 
-        self.clock2_gui = ClockCanvas(self.master, 200)
+        self.clock2_gui = ClockCanvas(self, 150)
         self.clock2_gui.grid(row=0, column=1)
 
-        self.clock3_gui = ClockCanvas(self.master, 200)
+        self.clock3_gui = ClockCanvas(self, 150)
         self.clock3_gui.grid(row=1, column=0)
 
-        self.clock4_gui = ClockCanvas(self.master, 200)
+        self.clock4_gui = ClockCanvas(self, 150)
         self.clock4_gui.grid(row=1, column=1)
 
-        self.clock5_gui = ClockCanvas(self.master, 200)
+        self.clock5_gui = ClockCanvas(self, 150)
         self.clock5_gui.grid(row=2, column=0)
 
-        self.clock6_gui = ClockCanvas(self.master, 200)
+        self.clock6_gui = ClockCanvas(self, 150)
         self.clock6_gui.grid(row=2, column=1)
 
         # create quit app button
-        tk.Button(
-            self.master, text='Quit', command=self.quit_app).grid(
-                row=100, column=0, columnspan=2)
+        # tk.Button(
+            # self.master, text='Quit', command=self.quit_app).grid(
+                # row=100, column=0, columnspan=2)
 
     def quit_app(self):
         """ closes screen """
@@ -65,15 +61,18 @@ class MainApplication(tk.Frame):
 
     def initialize_clocks(self):
         """ initializes all clocks """
-        self.clock1_cmd = sc.SingleClock(0, 90)
-        self.clock2_cmd = sc.SingleClock(0, 90)
-        self.clock3_cmd = sc.SingleClock(0, 90)
-        self.clock4_cmd = sc.SingleClock(0, 90)
-        self.clock5_cmd = sc.SingleClock(0, 90)
-        self.clock6_cmd = sc.SingleClock(0, 90)
+        self.clock1_cmd = sc.SingleClock(-90, 90)
+        self.clock2_cmd = sc.SingleClock(-90, 90)
+        self.clock3_cmd = sc.SingleClock(-90, 90)
+        self.clock4_cmd = sc.SingleClock(-90, 90)
+        self.clock5_cmd = sc.SingleClock(-90, 90)
+        self.clock6_cmd = sc.SingleClock(-90, 90)
 
     def set_goal(self, dest_config, motion_time):
         """ set motion parameters given a destination config """
+        self.dest_config = dest_config
+        self.digit_complete = False
+
         self.clock1_cmd.set_goal(dest_config[0][0], dest_config[0][1], motion_time)
         self.clock2_cmd.set_goal(dest_config[1][0], dest_config[1][1], motion_time)
         self.clock3_cmd.set_goal(dest_config[2][0], dest_config[2][1], motion_time)
@@ -85,6 +84,12 @@ class MainApplication(tk.Frame):
         """ dynamically draws a picture with clocks given the config array
             config: [(a1, a2), (b1, b2), (c1, c2), (d1, d2), (e1, e2), (f1, f2)]
         """
+        # pylint: disable = too-many-boolean-expressions, bad-indentation
+        if self.clock1_cmd.motion_complete and self.clock2_cmd.motion_complete and \
+                self.clock3_cmd.motion_complete and self.clock4_cmd.motion_complete and \
+                self.clock5_cmd.motion_complete and self.clock6_cmd.motion_complete:
+                    self.digit_complete = True
+
         c1_a, c1_b = self.clock1_cmd.goto_pos()
         c2_a, c2_b = self.clock2_cmd.goto_pos()
         c3_a, c3_b = self.clock3_cmd.goto_pos()
@@ -98,15 +103,6 @@ class MainApplication(tk.Frame):
         self.clock4_gui.draw_hands(c4_a, c4_b)
         self.clock5_gui.draw_hands(c5_a, c5_b)
         self.clock6_gui.draw_hands(c6_a, c6_b)
-
-    def motion_complete(self):
-        """ checks if all clocks have reached goal """
-        return bool(self.clock1_cmd.hand_1.motion_complete and
-                    self.clock1_cmd.hand_2.motion_complete
-                    and self.clock1_cmd.hand_1.motion_complete and
-                    self.clock1_cmd.hand_1.motion_complete
-                    and self.clock1_cmd.hand_1.motion_complete and
-                    self.clock1_cmd.hand_1.motion_complete)
 
 
 class ClockCanvas(tk.Frame):
@@ -122,6 +118,12 @@ class ClockCanvas(tk.Frame):
         self.clock_radius = 0.45 * self.canvas_width
         self.hand_radius = 0.95 * self.clock_radius
         self.hand_width = 8
+        self.dot_radius = 8
+
+        self.face_color = "black"
+        self.hand_color = "white"
+        self.dot_color = "red"
+        self.bg_color = "grey"
 
         self.middle_x = self.canvas_width / 2
         self.middle_y = self.canvas_height / 2
@@ -135,13 +137,16 @@ class ClockCanvas(tk.Frame):
         """ initialize canvas for clock to be drawn """
 
         self.canvas = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height,
-                                borderwidth=0, bg="black")
+                                borderwidth=0, bg=self.bg_color)
         self.canvas.grid(row=0, column=0)
 
     def initialize_clockface(self, hand1_angle, hand2_angle):
         """ draws clock with initial hand positions """
-        self._create_circle(self.middle_x, self.middle_y, self.clock_radius, fill="white")
-        self._create_circle(self.middle_x, self.middle_y, 15, fill="blue")
+        # create clockface
+        self._create_circle(self.middle_x, self.middle_y, self.clock_radius, fill=self.face_color)
+
+        # create dot
+        self._create_circle(self.middle_x, self.middle_y, self.dot_radius, fill=self.dot_color)
 
         h1_x_pos, h1_y_pos = self.angle_to_coord(hand1_angle)
         h2_x_pos, h2_y_pos = self.angle_to_coord(hand2_angle)
@@ -165,13 +170,15 @@ class ClockCanvas(tk.Frame):
         h1_x_pos, h1_y_pos = self.angle_to_coord(hand1_angle)
         h2_x_pos, h2_y_pos = self.angle_to_coord(hand2_angle)
 
+        # create hand 1
         self.hand1 = self.canvas.create_line(self.middle_x, self.middle_y,
                                              self.middle_x + h1_x_pos, self.middle_y - h1_y_pos,
-                                             width=self.hand_width, fill="black")
+                                             width=self.hand_width, fill=self.hand_color)
 
+        # create hand 2
         self.hand2 = self.canvas.create_line(self.middle_x, self.middle_y,
                                              self.middle_x + h2_x_pos, self.middle_y - h2_y_pos,
-                                             width=self.hand_width, fill="black")
+                                             width=self.hand_width, fill=self.hand_color)
 
     def angle_to_coord(self, angle):
         """ determines x, y position for a given angle """
@@ -196,22 +203,11 @@ def main():
     """ main function """
     # pylint: disable = too-many-locals, too-many-statements
     root = tk.Tk()
-    app = MainApplication(root)
-
-    home_pos = [(0, 0), (0, 0), (0, 0), (0, 0), (0, 0), (0, 0)]
-    number_1 = [(-135, -135), (-180, -180), (-135, -135), (0, -180), (-135, -135), (0, 0)]
-    number_2 = [(90, 90), (-90, 180), (180, 90), (-90, 0), (0, 90), (-90, -90)]
-    number_3 = [(90, 90), (-90, 180), (90, 90), (-90, 0), (90, 90), (-90, 0)]
-    number_4 = [(180, 180), (180, 180), (0, 90), (0, 180), (-135, -135), (0, 1)]
-    number_5 = [(90, 180), (-90, -90), (0, 90), (-90, 180), (90, 90), (-90, 0)]
-    number_6 = [(90, 180), (-90, -90), (0, 180), (-90, 180), (0, 90), (-90, 0)]
-    number_7 = [(90, 90), (-90, -90), (-135, -135), (0, 180), (-135, -135), (0, 0)]
-    number_8 = [(90, 180), (-90, 180), (0, 90), (-90, 0), (0, 90), (-90, 0)]
-    number_9 = [(90, 180), (-90, 180), (0, 90), (-90, 0), (90, 90), (-90, 0)]
-    number_0 = [(90, 180), (-90, 180), (0, 180), (0, 180), (0, 90), (-90, 0)]
+    app = DigitGUI(root)
+    app.pack()
 
     move_time = 1500
-    app.set_goal(home_pos, move_time)
+    app.set_goal(cc.HOME_POS, move_time)
     time_1 = time.time()
     quit_flag = False
     while quit_flag is False:
@@ -219,44 +215,38 @@ def main():
         app.update_idletasks()
         app.update()
 
-        if app.motion_complete() is True and timer(time_1) > 2 and timer(time_1) < 2.01:
-            app.set_goal(number_1, move_time)
-            print("goal reacheed")
+        if timer(time_1) > 2 and timer(time_1) < 2.01:
+            app.set_goal(cc.NUMBER_1, move_time)
 
-        if app.motion_complete() is True and timer(time_1) > 5 and timer(time_1) < 5.01:
-            app.set_goal(number_2, move_time)
-            print("goal reacheed")
+        if timer(time_1) > 5 and timer(time_1) < 5.01:
+            app.set_goal(cc.NUMBER_2, move_time)
 
-        if app.motion_complete() is True and timer(time_1) > 8 and timer(time_1) < 8.01:
-            app.set_goal(number_3, move_time)
-            print("goal reached")
-        if app.motion_complete() is True and timer(time_1) > 11 and timer(time_1) < 11.01:
-            app.set_goal(number_4, move_time)
-            print("goal reached")
-        if app.motion_complete() is True and timer(time_1) > 14 and timer(time_1) < 14.01:
-            app.set_goal(number_5, move_time)
-            print("goal reacheed")
+        if timer(time_1) > 8 and timer(time_1) < 8.01:
+            app.set_goal(cc.NUMBER_3, move_time)
 
-        if app.motion_complete() is True and timer(time_1) > 17 and timer(time_1) < 17.01:
-            app.set_goal(number_6, move_time)
-            print("goal reached")
-        if app.motion_complete() is True and timer(time_1) > 20 and timer(time_1) < 20.01:
-            app.set_goal(number_7, move_time)
-            print("goal reacheed")
+        if timer(time_1) > 11 and timer(time_1) < 11.01:
+            app.set_goal(cc.NUMBER_4, move_time)
 
-        if app.motion_complete() is True and timer(time_1) > 23 and timer(time_1) < 23.01:
-            app.set_goal(number_8, move_time)
-            print("goal reached")
-        if app.motion_complete() is True and timer(time_1) > 26 and timer(time_1) < 26.01:
-            app.set_goal(number_9, move_time)
-            print("goal reacheed")
+        if timer(time_1) > 14 and timer(time_1) < 14.01:
+            app.set_goal(cc.NUMBER_5, move_time)
 
-        if app.motion_complete() is True and timer(time_1) > 29 and timer(time_1) < 29.01:
-            app.set_goal(number_0, move_time)
-            print("goal reacheed")
+        if timer(time_1) > 17 and timer(time_1) < 17.01:
+            app.set_goal(cc.NUMBER_6, move_time)
 
-        if app.motion_complete() is True and timer(time_1) > 31 and timer(time_1) < 31.5:
-            print("goal reached")
+        if timer(time_1) > 20 and timer(time_1) < 20.01:
+            app.set_goal(cc.NUMBER_7, move_time)
+
+        if timer(time_1) > 23 and timer(time_1) < 23.01:
+            app.set_goal(cc.NUMBER_8, move_time)
+
+        if timer(time_1) > 26 and timer(time_1) < 26.01:
+            app.set_goal(cc.NUMBER_9, move_time)
+
+        if timer(time_1) > 29 and timer(time_1) < 29.01:
+            app.set_goal(cc.NUMBER_0, move_time)
+
+        if timer(time_1) > 31 and timer(time_1) < 31.5:
+
             quit_flag = True
 
     time.sleep(2)

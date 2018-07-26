@@ -4,6 +4,7 @@ import time
 import clock_hand as ch
 
 
+
 class SingleClock():
 
     """ Defines the hands for a single clock """
@@ -15,11 +16,8 @@ class SingleClock():
         self.dest_1 = 0
         self.dest_2 = 0
 
-        # completion flag for a single clock
         self.motion_complete = False
 
-        # moving flag
-        self.moving = False
 
     def set_goal(self, dest_1, dest_2, motion_time):
         """ evaluates motion parameters """
@@ -28,11 +26,13 @@ class SingleClock():
         self.dest_1 = dest_1
         self.dest_2 = dest_2
 
+        # motion complete flag to False
+        self.motion_complete = False
+
         # set motion parameters
         self.hand_1.set_goal(dest_1, motion_time)
         self.hand_2.set_goal(dest_2, motion_time)
 
-        self.motion_complete = False
 
     def goto_pos(self):
         """ goes to set angle positions for each hand """
