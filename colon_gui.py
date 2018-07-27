@@ -1,4 +1,4 @@
-""" Template for GUIs"""
+""" GUI for colon """
 try:
     # python 3.x
     import tkinter as tk
@@ -16,7 +16,7 @@ import clock_config as cconfig
 
 # pylint: disable = too-many-ancestors, too-many-instance-attributes, invalid-name
 
-class DigitGUI(tk.Frame):
+class ColonGUI(tk.Frame):
 
     """ master app """
 
@@ -117,7 +117,7 @@ def main():
     """ main function """
     # pylint: disable = too-many-locals, too-many-statements
     root = tk.Tk()
-    app = DigitGUI(root)
+    app = ColonGUI(root)
     app.pack()
 
     move_time = 1500

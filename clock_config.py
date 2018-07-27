@@ -11,3 +11,17 @@ NUMBER_7 = [(90, 90), (-90, 180), (-135, -135), (0, 180), (-135, -135), (0, 0)]
 NUMBER_8 = [(90, 180), (-90, 180), (0, 90), (-90, 0), (0, 90), (-90, 0)]
 NUMBER_9 = [(90, 180), (-90, 180), (0, 90), (-90, 0), (90, 90), (-90, 0)]
 NUMBER_0 = [(90, 180), (-90, 180), (0, 180), (0, 180), (0, 90), (-90, 0)]
+
+
+CLOCK_SIZE = 150
+FACE_COLOR = "black"
+HAND_COLOR = "white"
+DOT_COLOR = "#660000"
+BG_COLOR = "black"
+OFF_COLOR = "#262626"
+OFF_ANGLE = -135
+
+CLOCK_RADIUS_RATIO = 0.485
+HAND_RADIUS_RATIO = 0.97
+HAND_WIDTH = 8
+DOT_RADIUS = 10

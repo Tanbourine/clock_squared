@@ -31,7 +31,6 @@ class MainApplication(tk.Frame):
     def configure_gui(self):
         """ configure gui settings """
         self.master.title("Clocks on Clocks")
-        # self.master.geometry("280x800")
         self.master.resizable(width=True, height=True)
 
     def create_widgets(self):
@@ -44,10 +43,10 @@ class MainApplication(tk.Frame):
         self.digit_2.grid(row=0, column=1)
 
         self.digit_3 = dg.DigitGUI(self.master)
-        self.digit_3.grid(row=0, column=2)
+        self.digit_3.grid(row=0, column=3)
 
         self.digit_4 = dg.DigitGUI(self.master)
-        self.digit_4.grid(row=0, column=3)
+        self.digit_4.grid(row=0, column=4)
 
         digit_array = [self.digit_1, self.digit_2, self.digit_3, self.digit_4]
 
@@ -56,7 +55,7 @@ class MainApplication(tk.Frame):
                 digit.clock_gui_array[i].dot_color = "#660000"
                 digit.clock_gui_array[i].bg_color = "black"
                 digit.clock_gui_array[i].hand_color = "white"
-                digit.clock_gui_array[i].reset_face(-90,90)
+                digit.clock_gui_array[i].reset_face(-90, 90)
 
         # create quit app button
         tk.Button(
@@ -66,7 +65,6 @@ class MainApplication(tk.Frame):
     def quit_app(self):
         """ closes screen """
         self.master.destroy()
-       
 
 
 def t_bound(t1, t2, bound=0.1):
@@ -127,6 +125,8 @@ def main():
     auto_mode = True
     move_time = 2000
     prev_time = time.time()
+    update_gui_time = time.time()
+    refresh_rate = 100
 
     app.digit_1.set_goal(cc.HOME_POS, move_time)
     app.digit_2.set_goal(cc.HOME_POS, move_time)
@@ -159,12 +159,13 @@ def main():
             prev_time = time.time()
             print(unformatted_time)
 
-        app.digit_1.draw()
-        app.digit_2.draw()
-        app.digit_3.draw()
-        app.digit_4.draw()
-        app.update_idletasks()
-        app.update()
+        if (time.time() - update_gui_time) > refresh_rate / 1000:
+            app.digit_1.draw()
+            app.digit_2.draw()
+            app.digit_3.draw()
+            app.digit_4.draw()
+            app.update_idletasks()
+            app.update()
 
 
 if __name__ == "__main__":
