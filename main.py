@@ -128,7 +128,7 @@ def main():
     app = MainApplication(root)
 
     auto_mode = True
-    move_time = 2500
+    move_time = 2000
     prev_time = time.time()
     update_gui_time = time.time()
     refresh_rate = 100
@@ -162,13 +162,13 @@ def main():
             if output_config[0] == cc.NUMBER_1:
                 output_config[0] = cc.NUMBER_1_LEFT
 
-            elif output_config[1] == cc.NUMBER_1:
+            if output_config[1] == cc.NUMBER_1:
                 output_config[1] = cc.NUMBER_1_LEFT
 
-            elif output_config[2] == cc.NUMBER_1:
+            if output_config[2] == cc.NUMBER_1:
                 output_config[2] = cc.NUMBER_1_LEFT
 
-            elif output_config[3] == cc.NUMBER_1:
+            if output_config[3] == cc.NUMBER_1:
                 output_config[3] = cc.NUMBER_1_RIGHT
 
             app.digit_1.set_goal(output_config[0], move_time)
@@ -176,8 +176,9 @@ def main():
             app.digit_3.set_goal(output_config[2], move_time)
             app.digit_4.set_goal(output_config[3], move_time)
             prev_time = time.time()
-            if str(unformatted_time)[7] in ['0', '5']:
-                print("The time is >>> ", unformatted_time)
+
+        # if str(unformatted_time)[7] in ['0', '5']:
+            print("The time is >>> ", unformatted_time)
 
         if (time.time() - update_gui_time) > refresh_rate / 1000:
             app.digit_1.draw()
