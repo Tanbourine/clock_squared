@@ -36,6 +36,7 @@ class MainApplication(tk.Frame):
 
     def create_widgets(self):
         """ initalizes widgets """
+        # pylint: disable = unused-variable
 
         self.digit_1 = dg.DigitGUI(self.master)
         self.digit_1.grid(row=0, column=0)
@@ -54,17 +55,17 @@ class MainApplication(tk.Frame):
 
         digit_array = [self.digit_1, self.digit_2, self.digit_3, self.digit_4]
 ##
-##        for digit in digit_array:
-##            for i in range(6):
-##                digit.clock_gui_array[i].dot_color = "#660000"
-##                digit.clock_gui_array[i].bg_color = "black"
-##                digit.clock_gui_array[i].hand_color = "white"
-##                digit.clock_gui_array[i].reset_face(-90, 90)
+# for digit in digit_array:
+# for i in range(6):
+# digit.clock_gui_array[i].dot_color = "#660000"
+# digit.clock_gui_array[i].bg_color = "black"
+# digit.clock_gui_array[i].hand_color = "white"
+# digit.clock_gui_array[i].reset_face(-90, 90)
 
         # create quit app button
         tk.Button(
             self.master, text='Quit', command=self.quit_app).grid(
-                row=100, column=0, columnspan=4)
+                row=100, column=0, columnspan=5)
 
     def quit_app(self):
         """ closes screen """
@@ -117,7 +118,7 @@ def get_time():
     current_time.append(str(unformatted_time)[3:4])
     current_time.append(str(unformatted_time)[4:5])
 
-    return current_time, "The time is >>> " + str(unformatted_time)[0:8]
+    return current_time, str(unformatted_time)[0:8]
 
 
 def main():
@@ -127,7 +128,7 @@ def main():
     app = MainApplication(root)
 
     auto_mode = True
-    move_time = 2000
+    move_time = 2500
     prev_time = time.time()
     update_gui_time = time.time()
     refresh_rate = 100
@@ -147,7 +148,6 @@ def main():
         else:
             if app.digit_1.digit_complete and app.digit_2.digit_complete and \
                     app.digit_3.digit_complete and app.digit_4.digit_complete:
-            # if app.digit_1.digit_complete and time.time() - prev_time > move_time / 1000 + 0.25:
                 user_input = input("Enter 4 numbers to display >>> ")
                 disp_config = []
                 for num in user_input:
@@ -157,12 +157,27 @@ def main():
                 print(output_config)
 
         if app.digit_1.digit_complete and (time.time() - prev_time) > move_time / 1000 + 0.25:
+            # special configs for each digit place
+
+            if output_config[0] == cc.NUMBER_1:
+                output_config[0] = cc.NUMBER_1_LEFT
+
+            elif output_config[1] == cc.NUMBER_1:
+                output_config[1] = cc.NUMBER_1_LEFT
+
+            elif output_config[2] == cc.NUMBER_1:
+                output_config[2] = cc.NUMBER_1_LEFT
+
+            elif output_config[3] == cc.NUMBER_1:
+                output_config[3] = cc.NUMBER_1_RIGHT
+
             app.digit_1.set_goal(output_config[0], move_time)
             app.digit_2.set_goal(output_config[1], move_time)
             app.digit_3.set_goal(output_config[2], move_time)
             app.digit_4.set_goal(output_config[3], move_time)
             prev_time = time.time()
-            print(unformatted_time)
+            if str(unformatted_time)[7] in ['0', '5']:
+                print("The time is >>> ", unformatted_time)
 
         if (time.time() - update_gui_time) > refresh_rate / 1000:
             app.digit_1.draw()
