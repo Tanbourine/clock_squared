@@ -1,3 +1,5 @@
+
+
 """ GUI for a single face """
 
 try:
@@ -11,6 +13,7 @@ except ImportError:
     print("Running on Python 2, might have issues")
 
 import math
+import time
 import clock_config as cconfig
 
 
@@ -34,6 +37,7 @@ class ClockCanvas(tk.Frame):
         self.hand_color = cconfig.HAND_COLOR
         self.dot_color = cconfig.DOT_COLOR
         self.bg_color = cconfig.BG_COLOR
+        self.off_color = cconfig.OFF_COLOR
 
         self.middle_x = self.canvas_width / 2
         self.middle_y = self.canvas_height / 2
@@ -81,30 +85,28 @@ class ClockCanvas(tk.Frame):
         h2_x_pos, h2_y_pos = self.angle_to_coord(hand2_angle)
 
         # create hand 1
+        #self.canvas.delete(self.hand1)
+        
+        self.canvas.delete(self.hand1)
         if hand1_angle == cconfig.OFF_ANGLE:
-            self.canvas.delete(self.hand1)
-            self.canvas.delete(self.hand1)
             self.hand1 = self.canvas.create_line(self.middle_x, self.middle_y,
                                                  self.middle_x + h1_x_pos, self.middle_y - h1_y_pos,
-                                                 width=self.hand_width, fill=cconfig.OFF_COLOR)
+                                                 width=self.hand_width, fill=self.off_color)
 
         else:
-            self.canvas.delete(self.hand1)
-            self.canvas.delete(self.hand1)
+
             self.hand1 = self.canvas.create_line(self.middle_x, self.middle_y,
                                                  self.middle_x + h1_x_pos, self.middle_y - h1_y_pos,
                                                  width=self.hand_width, fill=self.hand_color)
 
         # create hand 2
+        self.canvas.delete(self.hand2)
+        
         if hand2_angle == cconfig.OFF_ANGLE:
-            self.canvas.delete(self.hand2)
-            self.canvas.delete(self.hand2)
-            self.hand1 = self.canvas.create_line(self.middle_x, self.middle_y,
-                                                 self.middle_x + h1_x_pos, self.middle_y - h1_y_pos,
-                                                 width=self.hand_width, fill=cconfig.OFF_COLOR)
+            self.hand2 = self.canvas.create_line(self.middle_x, self.middle_y,
+                                                 self.middle_x + h2_x_pos, self.middle_y - h2_y_pos,
+                                                 width=self.hand_width, fill=self.off_color)
         else:
-            self.canvas.delete(self.hand2)
-            self.canvas.delete(self.hand2)
             self.hand2 = self.canvas.create_line(self.middle_x, self.middle_y,
                                                  self.middle_x + h2_x_pos, self.middle_y - h2_y_pos,
                                                  width=self.hand_width, fill=self.hand_color)
@@ -121,9 +123,24 @@ class ClockCanvas(tk.Frame):
         x_pos = self.hand_radius * math.sin(math.radians(angle))
         y_pos = self.hand_radius * math.cos(math.radians(angle))
 
+
         return x_pos, y_pos
 
     def _create_circle(self, x, y, r, **kwargs):
         # pylint: disable = invalid-name
         """ draw a circle easily """
         self.canvas.create_oval(x - r, y - r, x + r, y + r, **kwargs)
+
+def main():
+    root = tk.Tk()
+    app = ClockCanvas(root, cconfig.CLOCK_SIZE)
+    app.pack()
+
+    for j in range(3):
+        for i in range(90,150):
+            app.draw_hands(i, -i)
+            time.sleep(.05)
+            app.update()
+
+if __name__ == '__main__':
+    main()

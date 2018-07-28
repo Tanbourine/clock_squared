@@ -38,22 +38,12 @@ class ColonGUI(tk.Frame):
         self.clock1_gui.grid(row=0, column=0)
 
         self.clock2_gui = cgui.ClockCanvas(self, self.clock_size)
-        self.clock2_gui.grid(row=0, column=1)
+        self.clock2_gui.grid(row=1, column=0)
 
         self.clock3_gui = cgui.ClockCanvas(self, self.clock_size)
-        self.clock3_gui.grid(row=1, column=0)
+        self.clock3_gui.grid(row=2, column=0)
 
-        self.clock4_gui = cgui.ClockCanvas(self, self.clock_size)
-        self.clock4_gui.grid(row=1, column=1)
-
-        self.clock5_gui = cgui.ClockCanvas(self, self.clock_size)
-        self.clock5_gui.grid(row=2, column=0)
-
-        self.clock6_gui = cgui.ClockCanvas(self, self.clock_size)
-        self.clock6_gui.grid(row=2, column=1)
-
-        self.clock_gui_array = [self.clock1_gui, self.clock2_gui, self.clock3_gui, self.clock4_gui,
-                                self.clock5_gui, self.clock6_gui]
+        self.clock_gui_array = [self.clock1_gui, self.clock2_gui, self.clock3_gui]
 
 
     def quit_app(self):
@@ -66,12 +56,8 @@ class ColonGUI(tk.Frame):
         self.clock1_cmd = sc.SingleClock(-90, 90)
         self.clock2_cmd = sc.SingleClock(-90, 90)
         self.clock3_cmd = sc.SingleClock(-90, 90)
-        self.clock4_cmd = sc.SingleClock(-90, 90)
-        self.clock5_cmd = sc.SingleClock(-90, 90)
-        self.clock6_cmd = sc.SingleClock(-90, 90)
 
-        self.clock_cmd_array = [self.clock1_cmd, self.clock2_cmd, self.clock3_cmd, self.clock4_cmd,
-                                self.clock5_cmd, self.clock6_cmd]
+        self.clock_cmd_array = [self.clock1_cmd, self.clock2_cmd, self.clock3_cmd]
 
     def set_goal(self, dest_config, motion_time):
         """ set motion parameters given a destination config """
@@ -87,23 +73,16 @@ class ColonGUI(tk.Frame):
         """
         # pylint: disable = too-many-boolean-expressions, bad-indentation
         if self.clock1_cmd.motion_complete and self.clock2_cmd.motion_complete and \
-                self.clock3_cmd.motion_complete and self.clock4_cmd.motion_complete and \
-                self.clock5_cmd.motion_complete and self.clock6_cmd.motion_complete:
+                self.clock3_cmd.motion_complete:
                     self.digit_complete = True
 
         c1_a, c1_b = self.clock1_cmd.goto_pos()
         c2_a, c2_b = self.clock2_cmd.goto_pos()
         c3_a, c3_b = self.clock3_cmd.goto_pos()
-        c4_a, c4_b = self.clock4_cmd.goto_pos()
-        c5_a, c5_b = self.clock5_cmd.goto_pos()
-        c6_a, c6_b = self.clock6_cmd.goto_pos()
 
         self.clock1_gui.draw_hands(c1_a, c1_b)
         self.clock2_gui.draw_hands(c2_a, c2_b)
         self.clock3_gui.draw_hands(c3_a, c3_b)
-        self.clock4_gui.draw_hands(c4_a, c4_b)
-        self.clock5_gui.draw_hands(c5_a, c5_b)
-        self.clock6_gui.draw_hands(c6_a, c6_b)
 
 
 
@@ -121,51 +100,15 @@ def main():
     app.pack()
 
     move_time = 1500
-    app.set_goal(cconfig.HOME_POS, move_time)
+    app.set_goal([(-135, -135), (-135, -135), (-135, -135)], move_time)
     time_1 = time.time()
-    quit_flag = False
-    while quit_flag is False:
+    while True:
         app.draw()
         app.update_idletasks()
         app.update()
+        time.sleep(0.1)
 
-        if timer(time_1) > 2 and timer(time_1) < 2.01:
-            app.set_goal(cconfig.NUMBER_1, move_time)
-
-        if timer(time_1) > 5 and timer(time_1) < 5.01:
-            app.set_goal(cconfig.NUMBER_2, move_time)
-
-        if timer(time_1) > 8 and timer(time_1) < 8.01:
-            app.set_goal(cconfig.NUMBER_3, move_time)
-
-        if timer(time_1) > 11 and timer(time_1) < 11.01:
-            app.set_goal(cconfig.NUMBER_4, move_time)
-
-        if timer(time_1) > 14 and timer(time_1) < 14.01:
-            app.set_goal(cconfig.NUMBER_5, move_time)
-
-        if timer(time_1) > 17 and timer(time_1) < 17.01:
-            app.set_goal(cconfig.NUMBER_6, move_time)
-
-        if timer(time_1) > 20 and timer(time_1) < 20.01:
-            app.set_goal(cconfig.NUMBER_7, move_time)
-
-        if timer(time_1) > 23 and timer(time_1) < 23.01:
-            app.set_goal(cconfig.NUMBER_8, move_time)
-
-        if timer(time_1) > 26 and timer(time_1) < 26.01:
-            app.set_goal(cconfig.NUMBER_9, move_time)
-
-        if timer(time_1) > 29 and timer(time_1) < 29.01:
-            app.set_goal(cconfig.NUMBER_0, move_time)
-
-        if timer(time_1) > 31 and timer(time_1) < 31.5:
-
-            quit_flag = True
-
-    time.sleep(2)
-    app.quit_app()
-
+      
 
 if __name__ == "__main__":
     main()
