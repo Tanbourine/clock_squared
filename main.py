@@ -6,8 +6,8 @@ try:
 
 except ImportError:
     # python 2.x
-    import Tkinter as tk
     print("Running on Python 2, might have issues")
+    import Tkinter as tk
 
 import time
 from datetime import datetime
@@ -54,18 +54,10 @@ class MainApplication(tk.Frame):
         self.colons.grid(row=0, column=2)
 
         digit_array = [self.digit_1, self.digit_2, self.digit_3, self.digit_4]
-##
-# for digit in digit_array:
-# for i in range(6):
-# digit.clock_gui_array[i].dot_color = "#660000"
-# digit.clock_gui_array[i].bg_color = "black"
-# digit.clock_gui_array[i].hand_color = "white"
-# digit.clock_gui_array[i].reset_face(-90, 90)
 
         # create quit app button
-        tk.Button(
-            self.master, text='Quit', command=self.quit_app).grid(
-                row=100, column=0, columnspan=5)
+        tk.Button(self.master, text='Quit',
+                command=self.quit_app).grid(row=100, column=0, columnspan=5)
 
     def quit_app(self):
         """ closes screen """
@@ -128,10 +120,10 @@ def main():
     app = MainApplication(root)
 
     auto_mode = True
-    move_time = 2000
+    move_time = cc.MOVE_TIME
     prev_time = time.time()
     update_gui_time = time.time()
-    refresh_rate = 100
+    refresh_rate = cc.GUI_UPDATE_TIME
 
     app.digit_1.set_goal(cc.HOME_POS, move_time)
     app.digit_2.set_goal(cc.HOME_POS, move_time)
@@ -145,18 +137,18 @@ def main():
             current_time, unformatted_time = get_time()
             output_config = time_to_config(current_time)
 
-        else:
-            if app.digit_1.digit_complete and app.digit_2.digit_complete and \
-                    app.digit_3.digit_complete and app.digit_4.digit_complete:
-                user_input = input("Enter 4 numbers to display >>> ")
-                disp_config = []
-                for num in user_input:
-                    disp_config.append(num)
+        # else:
+            # if app.digit_1.digit_complete and app.digit_2.digit_complete and \
+                    # app.digit_3.digit_complete and app.digit_4.digit_complete:
+                    # user_input = input("Enter 4 numbers to display >>> ")
+                # disp_config = []
+                # for num in user_input:
+                    # disp_config.append(num)
 
-                output_config = time_to_config(disp_config)
-                print(output_config)
+                # output_config = time_to_config(disp_config)
+                # print(output_config)
 
-        if app.digit_1.digit_complete and (time.time() - prev_time) > move_time / 1000 + 0.25:
+        if app.digit_3.digit_complete and (time.time() - prev_time) > move_time / 1000 + 0.5:
             # special configs for each digit place
 
             if output_config[0] == cc.NUMBER_1:
@@ -177,7 +169,6 @@ def main():
             app.digit_4.set_goal(output_config[3], move_time)
             prev_time = time.time()
 
-        # if str(unformatted_time)[7] in ['0', '5']:
             print("The time is >>> ", unformatted_time)
 
         if (time.time() - update_gui_time) > refresh_rate / 1000:

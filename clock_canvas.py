@@ -88,7 +88,8 @@ class ClockCanvas(tk.Frame):
         #self.canvas.delete(self.hand1)
         
         self.canvas.delete(self.hand1)
-        if hand1_angle == cconfig.OFF_ANGLE:
+        if hand1_angle >= cconfig.OFF_ANGLE - cconfig.ANGLE_TOLERANCE and hand1_angle <= \
+                cconfig.OFF_ANGLE + cconfig.ANGLE_TOLERANCE:
             self.hand1 = self.canvas.create_line(self.middle_x, self.middle_y,
                                                  self.middle_x + h1_x_pos, self.middle_y - h1_y_pos,
                                                  width=self.hand_width, fill=self.off_color)
@@ -102,7 +103,8 @@ class ClockCanvas(tk.Frame):
         # create hand 2
         self.canvas.delete(self.hand2)
         
-        if hand2_angle == cconfig.OFF_ANGLE:
+        if hand2_angle >= cconfig.OFF_ANGLE - cconfig.ANGLE_TOLERANCE and hand2_angle <= \
+                cconfig.OFF_ANGLE + cconfig.ANGLE_TOLERANCE:
             self.hand2 = self.canvas.create_line(self.middle_x, self.middle_y,
                                                  self.middle_x + h2_x_pos, self.middle_y - h2_y_pos,
                                                  width=self.hand_width, fill=self.off_color)

@@ -53,7 +53,7 @@ class DigitGUI(tk.Frame):
         self.clock6_gui.grid(row=2, column=1)
 
         self.clock_gui_array = [self.clock1_gui, self.clock2_gui, self.clock3_gui, self.clock4_gui,
-                                self.clock5_gui, self.clock6_gui]
+                    self.clock5_gui, self.clock6_gui]
 
 
     def quit_app(self):
@@ -71,7 +71,9 @@ class DigitGUI(tk.Frame):
         self.clock6_cmd = sc.SingleClock(-90, 90)
 
         self.clock_cmd_array = [self.clock1_cmd, self.clock2_cmd, self.clock3_cmd, self.clock4_cmd,
-                                self.clock5_cmd, self.clock6_cmd]
+                self.clock5_cmd, self.clock6_cmd]
+
+
 
     def set_goal(self, dest_config, motion_time):
         """ set motion parameters given a destination config """
@@ -80,6 +82,8 @@ class DigitGUI(tk.Frame):
 
         for i, clock in enumerate(self.clock_cmd_array):
             clock.set_goal(dest_config[i][0], dest_config[i][1], motion_time)
+
+
 
     def draw(self):
         """ dynamically draws a picture with clocks given the config array
@@ -112,6 +116,10 @@ def timer(t1):
     """ stopwatch """
     return time.time() - t1
 
+def t_between(t1,t2):
+    """time in between """
+    return 
+
 
 def main():
     """ main function """
@@ -120,16 +128,23 @@ def main():
     app = DigitGUI(root)
     app.pack()
 
+    number_array = [cconfig.HOME_POS, cconfig.NUMBER_1, cconfig.NUMBER_2, cconfig.NUMBER_3,
+            cconfig.NUMBER_4, cconfig.NUMBER_5, cconfig.NUMBER_6, cconfig.NUMBER_7,
+            cconfig.NUMBER_8, cconfig.NUMBER_9, cconfig.NUMBER_0]
     move_time = 1500
     app.set_goal(cconfig.HOME_POS, move_time)
     time_1 = time.time()
     quit_flag = False
     while quit_flag is False:
+        # for i, num in enumerate(number_array):
+            # if app.digit_complete and timer(time_1) > move_time * 2*i:
+                # app.set_goal(num, move_time)
+
         app.draw()
         app.update_idletasks()
         app.update()
 
-        if timer(time_1) > 2 and timer(time_1) < 2.01:
+        if timer(time_1) > move_time and timer(time_1) < move_time+.01:
             app.set_goal(cconfig.NUMBER_1, move_time)
 
         if timer(time_1) > 5 and timer(time_1) < 5.01:

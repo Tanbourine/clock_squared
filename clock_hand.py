@@ -1,6 +1,7 @@
 """ Class for a single clock hand
 """
 import time
+import clock_config as cconfig
 
 
 class ClockHand():
@@ -14,9 +15,9 @@ class ClockHand():
         self.delta_angle = 0
         self.step_size = 0
         self.prev_time = 0
-        self.scan_rate = 100
+        self.scan_rate = cconfig.CMD_RATE
         self.iterations = 0
-        self.angle_tolerance = .1  # degrees
+        self.angle_tolerance = cconfig.ANGLE_TOLERANCE  # degrees
         self.motion_complete = False
 
     def set_goal(self, destination, motion_time):

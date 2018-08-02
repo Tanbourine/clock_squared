@@ -2,6 +2,7 @@
 """
 import time
 import clock_hand as ch
+import clock_config as cconfig
 
 
 
@@ -12,6 +13,7 @@ class SingleClock():
     def __init__(self, hand_1_angle, hand_2_angle):
         self.hand_1 = ch.ClockHand(hand_1_angle)
         self.hand_2 = ch.ClockHand(hand_2_angle)
+        self.tolerance = cconfig.ANGLE_TOLERANCE
 
         self.dest_1 = 0
         self.dest_2 = 0
@@ -37,8 +39,11 @@ class SingleClock():
     def goto_pos(self):
         """ goes to set angle positions for each hand """
 
-        if self.hand_1.angle == self.dest_1 and self.hand_2.angle == self.dest_2:
-            self.motion_complete = True
+        if self.hand_1.angle >=  self.dest_1 - self.tolerance and self.hand_1.angle <= self.dest_1 \
+                +  self.tolerance:
+            if  self.hand_2.angle >= self.dest_2 - self.tolerance and self.hand_2.angle <= \
+            self.dest_2 + self.tolerance:
+                self.motion_complete = True
 
         # start move
         self.hand_1.goto_pos()
@@ -55,7 +60,7 @@ def main():
     """ main function that runs when this script is individually run """
     clock = SingleClock(0, 90)
 
-    scan_rate = 100
+    scan_rate = cconfig.CMD_RATE
     motion_time = 1000
     dest1 = 90
     dest2 = -90
