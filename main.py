@@ -57,7 +57,7 @@ class MainApplication(tk.Frame):
 
         # create quit app button
         tk.Button(self.master, text='Quit',
-                command=self.quit_app).grid(row=100, column=0, columnspan=5)
+                  command=self.quit_app).grid(row=100, column=0, columnspan=5)
 
     def quit_app(self):
         """ closes screen """
@@ -139,16 +139,18 @@ def main():
 
         # else:
             # if app.digit_1.digit_complete and app.digit_2.digit_complete and \
-                    # app.digit_3.digit_complete and app.digit_4.digit_complete:
-                    # user_input = input("Enter 4 numbers to display >>> ")
-                # disp_config = []
-                # for num in user_input:
-                    # disp_config.append(num)
+            # app.digit_3.digit_complete and app.digit_4.digit_complete:
+            # user_input = input("Enter 4 numbers to display >>> ")
+            # disp_config = []
+            # for num in user_input:
+            # disp_config.append(num)
 
-                # output_config = time_to_config(disp_config)
-                # print(output_config)
+            # output_config = time_to_config(disp_config)
+            # print(output_config)
 
-        if app.digit_3.digit_complete and (time.time() - prev_time) > move_time / 1000 + 0.5:
+        if app.digit_1.digit_complete and app.digit_2.digit_complete and \
+                app.digit_3.digit_complete and app.digit_4.digit_complete\
+                and (time.time() - prev_time) > move_time / 1000 + 0.5:
             # special configs for each digit place
 
             if output_config[0] == cc.NUMBER_1:

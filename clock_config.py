@@ -18,7 +18,7 @@ NUMBER_0 = [(90, 180), (-90, 180), (0, 180), (0, 180), (0, 90), (-90, 0)]
 
 COLON_CONFIG = [(-135, -135), (-135, -135), (-135, -135)]
 
-CLOCK_SIZE = 85
+CLOCK_SIZE = 75
 FACE_COLOR = "#262626"
 HAND_COLOR = "#626262"
 DOT_COLOR = "#660000"
@@ -30,10 +30,11 @@ CLOCK_RADIUS_RATIO = 0.485
 HAND_RADIUS_RATIO = 0.9
 HAND_WIDTH = int(CLOCK_SIZE / 12)
 DOT_RADIUS = 6
-MOVE_TIME = 3000                # millis
+MOVE_TIME = 7500                # millis
 GUI_UPDATE_TIME = 50            # millis
 CMD_RATE = 100
-ANGLE_TOLERANCE = 0.2
+ANGLE_TOLERANCE = 0.1
+
 
 def main():
     """ main app to run main app"""
